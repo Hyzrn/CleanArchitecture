@@ -1,11 +1,12 @@
 ﻿using CleanArchitecture.Application.DTOs.Common;
+using CleanArchitecture.Application.DTOs.LeaveType;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CleanArchitecture.Application.DTOs
+namespace CleanArchitecture.Application.DTOs.LeaveAllocation
 {
     public class LeaveAllocationDto : BaseDto
     {

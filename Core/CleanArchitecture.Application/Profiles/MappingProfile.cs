@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using CleanArchitecture.Application.DTOs;
+using CleanArchitecture.Application.DTOs.LeaveAllocation;
 using CleanArchitecture.Application.DTOs.LeaveRequest;
+using CleanArchitecture.Application.DTOs.LeaveType;
 using CleanArchitecture.Core.Domain;
 using System;
 using System.Collections.Generic;

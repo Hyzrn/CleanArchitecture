@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CleanArchitecture.Application.DTOs;
+using CleanArchitecture.Application.DTOs.LeaveType;
 using CleanArchitecture.Application.Features.LeaveTypes.Requests.Queries;
 using CleanArchitecture.Application.Persistence.Contracts;
 using MediatR;
