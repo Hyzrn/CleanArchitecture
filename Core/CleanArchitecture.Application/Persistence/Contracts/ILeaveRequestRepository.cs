@@ -11,5 +11,6 @@ namespace CleanArchitecture.Application.Persistence.Contracts
     {
         Task<LeaveRequest> GetLeaveRequestWithDetails(int id);
         Task<List<LeaveRequest>> GetLeaveRequestListWithDetails();
+        Task ChangeApprovalStatus(LeaveRequest leaveRequest, bool? approvalStatus);
     }
 }
