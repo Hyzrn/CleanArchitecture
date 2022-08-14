@@ -13,5 +13,6 @@ namespace CleanArchitecture.Application.Persistence.Contracts
         Task<T> Add(T entity);
         Task<T> Update(T entity);
         Task<T> Delete(T entity);
+        Task<bool> Exist(int id);
     }
 }
