@@ -1,4 +1,4 @@
-﻿using CleanArchitecture.Application.Persistence.Contracts;
+﻿using CleanArchitecture.Application.Contracts.Persistence;
 using FluentValidation;
 using System;
 using System.Collections.Generic;

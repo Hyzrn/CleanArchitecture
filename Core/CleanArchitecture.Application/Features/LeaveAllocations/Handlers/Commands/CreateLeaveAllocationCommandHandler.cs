@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using CleanArchitecture.Application.Features.LeaveAllocations.Requests.Commands;
-using CleanArchitecture.Application.Persistence.Contracts;
+using CleanArchitecture.Application.Contracts.Persistence;
 using CleanArchitecture.Core.Domain;
 using MediatR;
 using System;
