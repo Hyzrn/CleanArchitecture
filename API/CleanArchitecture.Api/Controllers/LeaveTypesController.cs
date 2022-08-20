@@ -1,6 +1,7 @@
 ﻿using CleanArchitecture.Application.DTOs.LeaveType;
 using CleanArchitecture.Application.Features.LeaveTypes.Requests.Commands;
 using CleanArchitecture.Application.Features.LeaveTypes.Requests.Queries;
+using CleanArchitecture.Application.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,7 +38,7 @@ namespace CleanArchitecture.Api.Controllers
 
         // POST api/<LeaveTypesController>
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] CreateLeaveTypeDto leaveTypeDto)
+        public async Task<ActionResult<BaseCommandResponse>> Post([FromBody] CreateLeaveTypeDto leaveTypeDto)
         {
             var command = new CreateLeaveTypeCommand { LeaveTypeDto = leaveTypeDto };   
             var response = await _mediator.Send(command);
