@@ -1,6 +1,8 @@
 using CleanArchitecture.Application;
+using CleanArchitecture.Identity;
 using CleanArchitecture.Infrastructure;
 using CleanArchitecture.Persistence;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,11 +11,50 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+#region Swagger
+builder.Services.AddSwaggerGen(c =>
+{
+
+c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+{
+Description = "Jwt Authorization",
+Name = "Authorization",
+In = ParameterLocation.Header,
+Type = SecuritySchemeType.ApiKey,
+Scheme = "Bearer"
+});
+
+c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+{
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header
+            },
+            new List<string>()
+        }
+});
+
+c.SwaggerDoc("v1", new OpenApiInfo
+{
+Version = "v1",
+Title = "Clean Architecture Api"
+});
+});  
+#endregion
 
 builder.Services.ConfigureApplicationServices();
 builder.Services.ConfigureInfrastructureServices(builder.Configuration);
 builder.Services.ConfigurePersistenceServices(builder.Configuration);
+builder.Services.ConfigureIdentityServices(builder.Configuration);
 
 builder.Services.AddCors(o =>
 {
@@ -22,6 +63,9 @@ builder.Services.AddCors(o =>
 });
 
 var app = builder.Build();
+
+
+app.UseAuthentication();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -32,8 +76,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
 app.UseAuthorization();
 app.UseCors("CorsPolicy");
 app.MapControllers();
 
 app.Run();
+
+
