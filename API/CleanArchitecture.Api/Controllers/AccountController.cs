@@ -1,5 +1,5 @@
 ﻿using CleanArchitecture.Application.Contratcs.Identity;
-using CleanArchitecture.Application.Model.Identity;
+using CleanArchitecture.Application.Models.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,5 +1,6 @@
-﻿using CleanArchitecture.Application.Contratcs.Identity;
-using CleanArchitecture.Application.Model.Identity;
+﻿using CleanArchitecture.Application.Constants;
+using CleanArchitecture.Application.Contratcs.Identity;
+using CleanArchitecture.Application.Models.Identity;
 using CleanArchitecture.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -115,7 +116,7 @@ namespace CleanArchitecture.Identity.Services
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
+                new Claim(CustomClaimTypes.Uid, user.Id)
             }
             .Union(userClaims)
             .Union(roleClaims);

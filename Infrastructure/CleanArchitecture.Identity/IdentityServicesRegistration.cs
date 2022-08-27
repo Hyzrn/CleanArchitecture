@@ -1,5 +1,5 @@
 ﻿using CleanArchitecture.Application.Contratcs.Identity;
-using CleanArchitecture.Application.Model.Identity;
+using CleanArchitecture.Application.Models.Identity;
 using CleanArchitecture.Identity.Models;
 using CleanArchitecture.Identity.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,6 +30,7 @@ namespace CleanArchitecture.Identity
                 .AddEntityFrameworkStores<CleanArchitectureIdentityDbContext>().AddDefaultTokenProviders();
 
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IUserService, UserService>();
 
             services.AddAuthentication(options =>
             {

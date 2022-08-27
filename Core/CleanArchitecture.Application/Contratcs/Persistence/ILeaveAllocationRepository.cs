@@ -11,5 +11,7 @@ namespace CleanArchitecture.Application.Contracts.Persistence
     {
         Task<LeaveAllocation> GetLeaveAllocationWithDetails(int id);
         Task<List<LeaveAllocation>> GetLeaveAllocationListWithDetails();
+        Task<bool> AllocationExists(string userId, int leaveTypeId, int period);
+        Task AddAllocations(List<LeaveAllocation> allocations);
     }
 }

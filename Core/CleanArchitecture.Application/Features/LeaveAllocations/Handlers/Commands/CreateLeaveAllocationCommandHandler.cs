@@ -8,24 +8,68 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CleanArchitecture.Application.Contratcs.Identity;
+using CleanArchitecture.Application.Responses;
+using CleanArchitecture.Application.DTOs.LeaveAllocation.Validators;
 
 namespace CleanArchitecture.Application.Features.LeaveAllocations.Handlers.Commands
 {
-    public class CreateLeaveAllocationCommandHandler : IRequestHandler<CreateLeaveAllocationCommand, int>
+    public class CreateLeaveAllocationCommandHandler : IRequestHandler<CreateLeaveAllocationCommand, BaseCommandResponse>
     {
         private readonly ILeaveAllocationRepository _leaveAllocationRepository;
+        private readonly ILeaveTypeRepository _leaveTypeRepository;
         private readonly IMapper _mapper;
+        private readonly IUserService _userService;
 
-        public CreateLeaveAllocationCommandHandler(ILeaveAllocationRepository leaveAllocationRepository, IMapper mapper)
+        public CreateLeaveAllocationCommandHandler(ILeaveAllocationRepository leaveAllocationRepository, 
+            ILeaveTypeRepository leaveTypeRepository, 
+            IMapper mapper, 
+            IUserService userService)
         {
             _leaveAllocationRepository = leaveAllocationRepository;
+            _leaveTypeRepository = leaveTypeRepository;
             _mapper = mapper;
+            _userService = userService;
         }
 
-        public async Task<int> Handle(CreateLeaveAllocationCommand request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse> Handle(CreateLeaveAllocationCommand request, CancellationToken cancellationToken)
         {
-            var addedLeaveAllocation = await _leaveAllocationRepository.Add(_mapper.Map<LeaveAllocation>(request.LeaveAllocationDto));
-            return addedLeaveAllocation.Id;
+            var response = new BaseCommandResponse();
+            var validator = new CreateLeaveAllocationDtoValidator(_leaveTypeRepository);
+            var validationResult = await validator.ValidateAsync(request.LeaveAllocationDto);
+
+            if (!validationResult.IsValid)
+            {
+                response.Success = false;
+                response.Message = "Creation failed";
+                response.Errors = validationResult.Errors.Select(x => x.ErrorMessage).ToList();
+            }
+            else
+            {
+                var leaveType = await _leaveTypeRepository.Get(request.LeaveAllocationDto.LeaveTypeId);
+                var employees = await _userService.GetEmployees();
+                var period = DateTime.Now.Year;
+                var allocations = new List<LeaveAllocation>();
+                foreach (var emp in employees)
+                {
+                    if (await _leaveAllocationRepository.AllocationExists(emp.Id, leaveType.Id, period))
+                        continue;
+                    allocations.Add(new LeaveAllocation
+                    {
+                        EmployeeId = emp.Id,
+                        LeaveTypeId = leaveType.Id,
+                        NumberOfDays = leaveType.DefaultDays,
+                        Period = period
+                    });
+                }
+
+                await _leaveAllocationRepository.AddAllocations(allocations);
+
+                response.Success = true;
+                response.Message = "Allocations Successful";
+            }
+
+            return response;
         }
     }
 }

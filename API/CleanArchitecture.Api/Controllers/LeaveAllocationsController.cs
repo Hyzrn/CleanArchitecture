@@ -1,6 +1,7 @@
 ﻿using CleanArchitecture.Application.DTOs.LeaveAllocation;
 using CleanArchitecture.Application.Features.LeaveAllocations.Requests.Commands;
 using CleanArchitecture.Application.Features.LeaveAllocations.Requests.Queries;
+using CleanArchitecture.Application.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,7 +38,7 @@ namespace CleanArchitecture.Api.Controllers
 
         // POST api/<LeaveAllocationsController>
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] CreateLeaveAllocationDto leaveAllocationDto)
+        public async Task<ActionResult<BaseCommandResponse>> Post([FromBody] CreateLeaveAllocationDto leaveAllocationDto)
         {
             var command = new CreateLeaveAllocationCommand { LeaveAllocationDto = leaveAllocationDto };
             var response = await _mediator.Send(command);

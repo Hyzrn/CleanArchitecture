@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CleanArchitecture.Application.Model.Identity
+namespace CleanArchitecture.Application.Models.Identity
 {
     public class RegistrationResponse
     {

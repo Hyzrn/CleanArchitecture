@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace CleanArchitecture.Application.Contratcs.Identity
 {
-    public interface IAuthService
+    public interface IUserService
     {
-        Task<AuthResponse> Login(AuthRequest request);
-        Task<RegistrationResponse> Register(RegistrationRequest request);
+        Task<List<Employee>> GetEmployees();
     }
 }
