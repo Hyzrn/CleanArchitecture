@@ -27,7 +27,8 @@ namespace CleanArchitecture.Application.Features.LeaveRequests.Handlers.Commands
         public async Task<Unit> Handle(DeleteLeaveRequestCommand request, CancellationToken cancellationToken)
         {
             var leaveRequest = await _unitOfWork.LeaveRequestRepository.Get(request.Id);
-
+            int zero  = 0;
+            int test = 5 / zero;
             if (leaveRequest == null)
                 throw new NotFoundException(nameof(LeaveRequest), request.Id);
 
