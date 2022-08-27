@@ -17,25 +17,23 @@ using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using CleanArchitecture.Application.Constants;
+using CleanArchitecture.Application.Contratcs.Persistence;
 
 namespace CleanArchitecture.Application.Features.LeaveRequests.Handlers.Commands
 {
     public class CreateLeaveRequestCommandHandler : IRequestHandler<CreateLeaveRequestCommand, BaseCommandResponse>
     {
-        private readonly ILeaveRequestRepository _leaveRequestRepository;
-        private readonly ILeaveTypeRepository _leaveTypeRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IEmailSender _emailSender;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CreateLeaveRequestCommandHandler(ILeaveRequestRepository leaveRequestRepository, 
+        public CreateLeaveRequestCommandHandler(IUnitOfWork unitOfWork, 
             IMapper mapper, 
-            ILeaveTypeRepository leaveTypeRepository, 
             IEmailSender emailSender,
             IHttpContextAccessor httpContextAccessor)
         {
-            _leaveRequestRepository = leaveRequestRepository;
-            _leaveTypeRepository = leaveTypeRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _emailSender = emailSender;
             _httpContextAccessor = httpContextAccessor;
@@ -44,7 +42,7 @@ namespace CleanArchitecture.Application.Features.LeaveRequests.Handlers.Commands
         public async Task<BaseCommandResponse> Handle(CreateLeaveRequestCommand request, CancellationToken cancellationToken)
         {
             var response = new BaseCommandResponse();
-            var validator = new CreateLeaveRequestDtoValidator(_leaveTypeRepository);
+            var validator = new CreateLeaveRequestDtoValidator(_unitOfWork.LeaveTypeRepository);
             var validationResult = await validator.ValidateAsync(request.LeaveRequestDto);
             var userId = _httpContextAccessor.HttpContext.User
                             .Claims.FirstOrDefault(x => x.Type == CustomClaimTypes.Uid)? .Value;
@@ -59,7 +57,8 @@ namespace CleanArchitecture.Application.Features.LeaveRequests.Handlers.Commands
             {
                 var leaveRequest = _mapper.Map<LeaveRequest>(request.LeaveRequestDto);
                 leaveRequest.RequestingEmployeeId = userId;
-                var addedLeaveRequest = await _leaveRequestRepository.Add(leaveRequest);
+                var addedLeaveRequest = await _unitOfWork.LeaveRequestRepository.Add(leaveRequest);
+                await _unitOfWork.Save();
 
                 response.Success = true;
                 response.Message = "Creation successful";

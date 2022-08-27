@@ -11,17 +11,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CleanArchitecture.Application.Responses;
+using CleanArchitecture.Application.Contratcs.Persistence;
 
 namespace CleanArchitecture.Application.Features.LeaveTypes.Handlers.Commands
 {
     public class CreateLeaveTypeCommandHandler : IRequestHandler<CreateLeaveTypeCommand, BaseCommandResponse>
     {
-        private readonly ILeaveTypeRepository _leaveTypeRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public CreateLeaveTypeCommandHandler(ILeaveTypeRepository leaveTypeRepository, IMapper mapper)
+        public CreateLeaveTypeCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _leaveTypeRepository = leaveTypeRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
 
         }
@@ -39,7 +40,8 @@ namespace CleanArchitecture.Application.Features.LeaveTypes.Handlers.Commands
             }
             else
             {
-                var addedLeaveType = await _leaveTypeRepository.Add(_mapper.Map<LeaveType>(request.LeaveTypeDto));
+                var addedLeaveType = await _unitOfWork.LeaveTypeRepository.Add(_mapper.Map<LeaveType>(request.LeaveTypeDto));
+                await _unitOfWork.Save();
 
                 response.Success = true;
                 response.Message = "Creation successful";
