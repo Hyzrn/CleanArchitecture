@@ -1,5 +1,7 @@
-﻿using CleanArchitecture.Application.Contracts.Persistence;
+﻿using CleanArchitecture.Application.Constants;
+using CleanArchitecture.Application.Contracts.Persistence;
 using CleanArchitecture.Application.Contratcs.Persistence;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +16,12 @@ namespace CleanArchitecture.Persistence.Repositories
         private ILeaveAllocationRepository _leaveAllocationRepository;
         private ILeaveRequestRepository _leaveRequestRepository;
         private ILeaveTypeRepository _leaveTypeRepository;
+        private IHttpContextAccessor _httpContextAccessor;
 
-        public UnitOfWork(CleanArchitectureDbContext context)
+        public UnitOfWork(CleanArchitectureDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public ILeaveAllocationRepository LeaveAllocationRepository => 
@@ -35,7 +39,8 @@ namespace CleanArchitecture.Persistence.Repositories
 
         public async Task Save()
         {
-            await _context.SaveChangesAsync();
+            var username = _httpContextAccessor.HttpContext.User.FindFirst(CustomClaimTypes.Uid)?.Value;
+            await _context.SaveChangesAsync(username);
         }
     }
 }

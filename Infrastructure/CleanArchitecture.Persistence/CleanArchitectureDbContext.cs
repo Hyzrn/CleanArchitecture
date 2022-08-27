@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CleanArchitecture.Persistence
 {
-    public class CleanArchitectureDbContext : DbContext
+    public class CleanArchitectureDbContext : AuditableDbContext
     {
         public CleanArchitectureDbContext(DbContextOptions<CleanArchitectureDbContext> options) : base(options)
         {
@@ -19,25 +19,6 @@ namespace CleanArchitecture.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CleanArchitectureDbContext).Assembly);
-        }
-
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            foreach (var entry in ChangeTracker.Entries<BaseDomainEntity>())
-            {
-                entry.Entity.LastModifiedDate = DateTime.Now;
-
-                if (entry.State == EntityState.Added)
-                {
-                    entry.Entity.CreatedDate = DateTime.Now;
-                }
-            }
-            return base.SaveChangesAsync(cancellationToken);
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
         }
 
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
